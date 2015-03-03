@@ -72,9 +72,9 @@ void MyGLWidget::createBuffers ()
   glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
   // Activem l'atribut que farem servir per vèrtex (només el 0 en aquest cas)
-  pos = glGetAttribLocation(program->programId(), "vertex");	
-  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(pos);
+  //pos = glGetAttribLocation(program->programId(), "vertex");	
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(0);
 
   // Desactivem el VAO
   glBindVertexArray(0);

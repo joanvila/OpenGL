@@ -29,7 +29,7 @@ void MyGLWidget::initializeGL ()
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
 
-  glClearColor (0.8, 0.7, 0.2, 1.0); // defineix color de fons (d'esborrat)
+  glClearColor (0.0, 0.0, 0.0, 1.0); // defineix color de fons (d'esborrat)
 
   initShaders();
 
