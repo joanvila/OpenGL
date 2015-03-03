@@ -25,7 +25,6 @@ class MyGLWidget : public QGLWidget
     void createBuffers ();
 
     void initShaders ();
-    void initProgramShaders();
 
     QGLShader *fs, *vs;
     QGLShaderProgram *program;

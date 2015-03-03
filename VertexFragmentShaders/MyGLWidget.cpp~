@@ -29,7 +29,7 @@ void MyGLWidget::initializeGL ()
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
 
-  glClearColor (0.8, 0.7, 0.2, 1.0); // defineix color de fons (d'esborrat)
+  glClearColor (0.0, 0.0, 0.0, 1.0); // defineix color de fons (d'esborrat)
 
   initShaders();
 
@@ -72,11 +72,32 @@ void MyGLWidget::createBuffers ()
   glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
   // Activem l'atribut que farem servir per vèrtex (només el 0 en aquest cas)
-  //pos = glGetAttribLocation(program->programId(), "vertex");	
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(0);
+  pos = glGetAttribLocation(program->programId(), "vertex");	
+  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(pos);
 
   // Desactivem el VAO
   glBindVertexArray(0);
+
+  //Colors
+  glm::vec3 Colores[3];
+  Colores[0] = glm::vec3(0.0, 1.0, 0.0);
+  Colores[1] = glm::vec3(1.0, 0.0, 0.0);
+  Colores[2] = glm::vec3(0.0, 0.0, 1.0);
+
+  glBindVertexArray(VAO);
+
+  // Creació del buffer amb les dades dels colors
+  glGenBuffers(1, &VBOc);
+  glBindBuffer(GL_ARRAY_BUFFER, VBOc);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Colores), Colores, GL_STATIC_DRAW);
+
+  pos = glGetAttribLocation(program->programId(), "color");	
+  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(pos);
+
+  // Desactivem el VAO
+  glBindVertexArray(0);
+
 }
 

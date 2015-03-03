@@ -78,5 +78,26 @@ void MyGLWidget::createBuffers ()
 
   // Desactivem el VAO
   glBindVertexArray(0);
+
+  //Colors
+  glm::vec3 Colores[3];
+  Colores[0] = glm::vec3(0.0, 1.0, 0.0);
+  Colores[1] = glm::vec3(1.0, 0.0, 0.0);
+  Colores[2] = glm::vec3(0.0, 0.0, 1.0);
+
+  glBindVertexArray(VAO);
+
+  // Creació del buffer amb les dades dels colors
+  glGenBuffers(1, &VBOc);
+  glBindBuffer(GL_ARRAY_BUFFER, VBOc);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Colores), Colores, GL_STATIC_DRAW);
+
+  //pos = glGetAttribLocation(program->programId(), "color");	
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(1);
+
+  // Desactivem el VAO
+  glBindVertexArray(0);
+
 }
 

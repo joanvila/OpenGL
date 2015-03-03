@@ -29,5 +29,5 @@ class MyGLWidget : public QGLWidget
     QGLShader *fs, *vs;
     QGLShaderProgram *program;
 
-    GLuint VAO, VBO;
+    GLuint VAO, VBO, VBOc;
 };
