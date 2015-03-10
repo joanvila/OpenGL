@@ -1,11 +1,8 @@
 #include <QGLWidget>
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include <QGLShader>
 #include <QGLShaderProgram>
 #include <QKeyEvent>
-
-#define GLM_FORCE_RADIANS
 
 class MyGLWidget : public QGLWidget 
 {
@@ -29,19 +26,14 @@ class MyGLWidget : public QGLWidget
 
   private:
     void createBuffers ();
+
     void initShaders ();
-    void modelTransform();
 
     QGLShader *fs, *vs;
     QGLShaderProgram *program;
 
     int varLoc;
-    GLuint transLoc;
-
-    float scl;
-
-    glm::mat4 TG;
-    glm::vec3 transVec;
+    float scl = 0.5;
 
     GLuint VAO, VBO, VBOc;
 };

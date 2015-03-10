@@ -100,16 +100,8 @@ void MyGLWidget::createBuffers ()
   glBindVertexArray(0);
 
   //Pintem la primera vegada
-  scl= 0.5;
   varLoc = glGetUniformLocation(program->programId(), "val");
-  glUniform1f(varLoc, scl);
-  
-  transVec.x = 0.0;
-  transVec.y = 0.0;
-  transVec.x = 0.0;
-  transLoc = glGetUniformLocation(program->programId(), "trans");
-  TG = glm::translate(glm::mat4(1.0), transVec);
-  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
+  glUniform1f(varLoc, 0.5);
 
 }
 
@@ -127,36 +119,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       glUniform1f(varLoc, scl);
       updateGL();
       break;
-    case Qt::Key_Left:
-      transVec.x -= 0.1;
-      TG = glm::translate(glm::mat4(1.0), transVec);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-      updateGL();
-      break;
-    case Qt::Key_Right:
-      transVec.x += 0.1;
-      TG = glm::translate(glm::mat4(1.0), transVec);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-      updateGL();
-      break;
-    case Qt::Key_Up:
-      transVec.y += 0.1;
-      TG = glm::translate(glm::mat4(1.0), transVec);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-      updateGL();
-      break;
-    case Qt::Key_Down:
-      transVec.y -= 0.1;
-      TG = glm::translate(glm::mat4(1.0), transVec);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-      updateGL();
-      break;
     default: e->ignore();
   }
-}
-
-void MyGLWidget::modelTransform(){
-  TG = glm::translate(glm::mat4(1.0), glm::vec3(-0.5,0.5,0.0));
-  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
