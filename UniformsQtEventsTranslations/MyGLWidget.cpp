@@ -100,7 +100,7 @@ void MyGLWidget::createBuffers ()
   glBindVertexArray(0);
 
   //Pintem la primera vegada
-  int varLoc = glGetUniformLocation(program->programId(), "val");
+  varLoc = glGetUniformLocation(program->programId(), "val");
   glUniform1f(varLoc, 0.5);
 
 }
@@ -110,13 +110,11 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
     case Qt::Key_Escape:
       exit(0);
     case Qt::Key_S:
-      varLoc = glGetUniformLocation(program->programId(), "val");
       scl += 0.1;
       glUniform1f(varLoc, scl);
       updateGL();
       break;
     case Qt::Key_D:
-      varLoc = glGetUniformLocation(program->programId(), "val");
       scl -= 0.1;
       glUniform1f(varLoc, scl);
       updateGL();
