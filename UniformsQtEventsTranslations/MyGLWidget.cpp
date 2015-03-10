@@ -104,8 +104,12 @@ void MyGLWidget::createBuffers ()
   varLoc = glGetUniformLocation(program->programId(), "val");
   glUniform1f(varLoc, scl);
   
+  transV.x = 0.0;
+  transV.y = 0.0;
+  transV.z = 0.0;
+  rotDegrees = 0.0;
   transLoc = glGetUniformLocation(program->programId(), "trans");
-  TG = glm::translate(glm::mat4(1.0), glm::vec3(0.0,0.0,0.0));
+  TG = glm::translate(glm::mat4(1.0), transV);
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
 
 }
@@ -125,23 +129,34 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       updateGL();
       break;
     case Qt::Key_Left:
-      TG = glm::translate(TG, glm::vec3(-0.1,0.0,0.0));
-      //TG = glm::rotate(TG, (float)45.0, glm::vec3(0.0,0.0,1.0));
+      transV.x -= 0.1;
+      rotDegrees += 45.0;
+      TG = glm::translate(glm::mat4(1.0), transV);
+      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Right:
-      TG = glm::translate(TG, glm::vec3(0.1,0.0,0.0));
+      transV.x += 0.1;
+      rotDegrees += 45.0;
+      TG = glm::translate(glm::mat4(1.0), transV);
+      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Up:
-      TG = glm::translate(TG, glm::vec3(0.0,0.1,0.0));
+      transV.y += 0.1;
+      rotDegrees += 45.0;
+      TG = glm::translate(glm::mat4(1.0), transV);
+      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Down:
-      TG = glm::translate(TG, glm::vec3(0.0,-0.1,0.0));
+      transV.y -= 0.1;
+      rotDegrees += 45.0;
+      TG = glm::translate(glm::mat4(1.0), transV);
+      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;

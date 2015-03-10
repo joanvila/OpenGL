@@ -41,6 +41,8 @@ class MyGLWidget : public QGLWidget
     float scl;
 
     glm::mat4 TG;
+    glm::vec3 transV;
+    float rotDegrees;
 
     GLuint VAO, VBO, VBOc;
 };
