@@ -99,19 +99,18 @@ void MyGLWidget::createBuffers ()
   // Desactivem el VAO
   glBindVertexArray(0);
 
-  //Pintem la primera vegada  
-  sclV.x = 1.0;
-  sclV.y = 1.0;
-  sclV.z = 1.0; 
-
+  //Pintem la primera vegada
+  scl= 0.5;
+  varLoc = glGetUniformLocation(program->programId(), "val");
+  glUniform1f(varLoc, scl);
+  
   transV.x = 0.0;
   transV.y = 0.0;
   transV.z = 0.0;
   rotDegrees = 0.0;
-  transLoc = glGetUniformLocation(program->programId(), "TG");
-  //TG = glm::scale(glm::mat4(1.0), sclV); 
-  //TG = glm::translate(TG, transV);
-  //glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
+  transLoc = glGetUniformLocation(program->programId(), "trans");
+  TG = glm::translate(glm::mat4(1.0), transV);
+  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
 
 }
 
@@ -120,58 +119,44 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
     case Qt::Key_Escape:
       exit(0);
     case Qt::Key_S:
-      sclV.x += 0.1;
-      sclV.y += 0.1;
-      sclV.z += 0.1;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
+      scl += 0.1;
+      glUniform1f(varLoc, scl);
       updateGL();
       break;
     case Qt::Key_D:
-      sclV.x -= 0.1;
-      sclV.y -= 0.1;
-      sclV.z -= 0.1;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
+      scl -= 0.1;
+      glUniform1f(varLoc, scl);
       updateGL();
       break;
     case Qt::Key_Left:
       transV.x -= 0.1;
       rotDegrees += 45.0;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
+      TG = glm::rotate(glm::mat4(1.0), rotDegrees, glm::vec3(0.0,0.0,1.0));
+      TG = glm::translate(TG, transV);
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Right:
       transV.x += 0.1;
       rotDegrees += 45.0;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
+      TG = glm::rotate(glm::mat4(1.0), rotDegrees, glm::vec3(0.0,0.0,1.0));
+      TG = glm::translate(TG, transV);
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Up:
       transV.y += 0.1;
       rotDegrees += 45.0;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
+      TG = glm::rotate(glm::mat4(1.0), rotDegrees, glm::vec3(0.0,0.0,1.0));
+      TG = glm::translate(TG, transV);
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;
     case Qt::Key_Down:
       transV.y -= 0.1;
       rotDegrees += 45.0;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
+      TG = glm::rotate(glm::mat4(1.0), rotDegrees, glm::vec3(0.0,0.0,1.0));
+      TG = glm::translate(TG, transV);
       glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
       updateGL();
       break;

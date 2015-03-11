@@ -35,11 +35,13 @@ class MyGLWidget : public QGLWidget
     QGLShader *fs, *vs;
     QGLShaderProgram *program;
 
+    int varLoc;
     GLuint transLoc;
+
+    float scl;
 
     glm::mat4 TG;
     glm::vec3 transV;
-    glm::vec3 sclV;
     float rotDegrees;
 
     GLuint VAO, VBO, VBOc;
