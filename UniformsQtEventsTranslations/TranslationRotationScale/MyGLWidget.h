@@ -4,7 +4,6 @@
 #include <QGLShader>
 #include <QGLShaderProgram>
 #include <QKeyEvent>
-#include <QMouseEvent>
 
 #define GLM_FORCE_RADIANS
 
@@ -28,8 +27,6 @@ class MyGLWidget : public QGLWidget
 
     virtual void keyPressEvent(QKeyEvent *e);
 
-    virtual void mouseMoveEvent(QMouseEvent *e);
-
   private:
     void createBuffers ();
     void initShaders ();
@@ -43,13 +40,7 @@ class MyGLWidget : public QGLWidget
     glm::mat4 TG;
     glm::vec3 transV;
     glm::vec3 sclV;
-
     float rotDegrees;
-
-    int lastX;
-    int lastY;
-
-    bool firstTime;
 
     GLuint VAO, VBO, VBOc;
 };

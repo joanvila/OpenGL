@@ -2,7 +2,6 @@
 #include "MyGLWidget.h"
 
 #include <iostream>
-#include <math.h> 
 
 MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
 {
@@ -35,20 +34,6 @@ void MyGLWidget::initializeGL ()
   initShaders();
 
   createBuffers();
-
-  //Pintem la primera vegada  
-  sclV.x = 1.0;
-  sclV.y = 1.0;
-  sclV.z = 1.0; 
-
-  transV.x = 0.0;
-  transV.y = 0.0;
-  transV.z = 0.0;
-  rotDegrees = 0.0;
-  transLoc = glGetUniformLocation(program->programId(), "TG");
-  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-
-  firstTime = true;
 }
 
 void MyGLWidget::paintGL ()
@@ -91,6 +76,9 @@ void MyGLWidget::createBuffers ()
   glVertexAttribPointer(posV, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(posV);
 
+  // Desactivem el VAO
+  glBindVertexArray(0);
+
   //Colors
   glm::vec3 Colores[3];
   Colores[0] = glm::vec3(0.0, 1.0, 0.0);
@@ -108,8 +96,22 @@ void MyGLWidget::createBuffers ()
   glVertexAttribPointer(posC, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(posC);
 
-	// Desactivem el VAO
+  // Desactivem el VAO
   glBindVertexArray(0);
+
+  //Pintem la primera vegada  
+  sclV.x = 1.0;
+  sclV.y = 1.0;
+  sclV.z = 1.0; 
+
+  transV.x = 0.0;
+  transV.y = 0.0;
+  transV.z = 0.0;
+  rotDegrees = 0.0;
+  transLoc = glGetUniformLocation(program->programId(), "TG");
+  //TG = glm::scale(glm::mat4(1.0), sclV); 
+  //TG = glm::translate(TG, transV);
+  //glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
 
 }
 
@@ -121,14 +123,6 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       sclV.x += 0.1;
       sclV.y += 0.1;
       sclV.z += 0.1;
-      TG = glm::translate(glm::mat4(1.0), transV);
-      TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-      TG = glm::scale(TG, sclV);
-      glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-      updateGL();
-      break;
-		case Qt::Key_Space:
-      rotDegrees += 20.0;
       TG = glm::translate(glm::mat4(1.0), transV);
       TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       TG = glm::scale(TG, sclV);
@@ -147,6 +141,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       break;
     case Qt::Key_Left:
       transV.x -= 0.1;
+      rotDegrees += 45.0;
       TG = glm::translate(glm::mat4(1.0), transV);
       TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       TG = glm::scale(TG, sclV);
@@ -155,6 +150,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       break;
     case Qt::Key_Right:
       transV.x += 0.1;
+      rotDegrees += 45.0;
       TG = glm::translate(glm::mat4(1.0), transV);
       TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       TG = glm::scale(TG, sclV);
@@ -163,6 +159,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       break;
     case Qt::Key_Up:
       transV.y += 0.1;
+      rotDegrees += 45.0;
       TG = glm::translate(glm::mat4(1.0), transV);
       TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       TG = glm::scale(TG, sclV);
@@ -171,6 +168,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       break;
     case Qt::Key_Down:
       transV.y -= 0.1;
+      rotDegrees += 45.0;
       TG = glm::translate(glm::mat4(1.0), transV);
       TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
       TG = glm::scale(TG, sclV);
@@ -179,44 +177,5 @@ void MyGLWidget::keyPressEvent(QKeyEvent *e){
       break;
     default: e->ignore();
   }
-}
-
-void MyGLWidget::mouseMoveEvent(QMouseEvent *e){
-  if (firstTime){
-    lastX = e->x();
-    lastY = e->y();
-    firstTime = false;
-  }
-  else{
-    int currentX = e->x();
-    int currentY = e->y();
-    int incrementX = abs(lastX - currentX);
-    int incrementY = abs(lastY - currentY);
-
-	  if (incrementY > incrementX){
-	    if (lastY < currentY){
-	    	sclV.y += 0.066;
-	    }
-	    else{
-	      sclV.y -= 0.066;
-	    }
-	  }
-	  else {
-	    if (lastX < currentX){
-	    	sclV.x += 0.066;
-	    }
-	    else{
-	      sclV.x -= 0.066;
-	    }
-	  }
-    lastX = currentX;
-    lastY = currentY;
-  }
-  
-  TG = glm::translate(glm::mat4(1.0), transV);
-  TG = glm::rotate(TG, rotDegrees, glm::vec3(0.0,0.0,1.0));
-  TG = glm::scale(TG, sclV);
-  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &TG[0][0]);
-  updateGL();
 }
 
