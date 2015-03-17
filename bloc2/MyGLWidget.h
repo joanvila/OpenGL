@@ -27,9 +27,11 @@ class MyGLWidget : public QGLWidget {
     void createBuffers ();
     void carregaShaders ();
     void modelTransform ();
+    void projectTransform ();
+		void viewTransform ();
 
     // attribute locations
-    GLuint vertexLoc, colorLoc;
+    GLuint vertexLoc, colorLoc, projLoc, viewLoc;
     // uniform locations
     GLuint transLoc;
     // VAO i VBO names

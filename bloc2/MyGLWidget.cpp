@@ -16,9 +16,13 @@ void MyGLWidget::initializeGL ()
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
 
+  //glEnable(GL_DEPTH_TEST);
+
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
   createBuffers();
+  projectTransform();
+	viewTransform();
   modelTransform ();
 }
 
@@ -46,8 +50,21 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-  transform = glm::rotate(transform, .58f, glm::vec3(1.,0.,0.));
+  transform = glm::rotate(transform, -0.58f, glm::vec3(1.,0.,0.));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
+}
+
+void MyGLWidget::projectTransform()
+{
+	// Matriu de transformació de la projecció
+	glm::mat4 Proj = glm::perspective(M_PI/2.0, 1.0, 1.0, 5.0);
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
+}
+
+void MyGLWidget::viewTransform()
+{
+	glm::mat4 View = glm::lookAt(glm::vec3(0,0,2), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
 void MyGLWidget::resizeGL (int w, int h) 
@@ -177,5 +194,7 @@ void MyGLWidget::carregaShaders()
   colorLoc = glGetAttribLocation (program->programId(), "color");
   // Uniform locations
   transLoc = glGetUniformLocation(program->programId(), "TG");
+  projLoc = glGetUniformLocation(program->programId(), "proj");
+  viewLoc = glGetUniformLocation(program->programId(), "view");
 }
 
