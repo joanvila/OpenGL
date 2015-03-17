@@ -16,7 +16,7 @@ void MyGLWidget::initializeGL ()
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
 
-  glEnable(GL_DEPTH_TEST);
+  //glEnable(GL_DEPTH_TEST);
 
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
@@ -29,19 +29,19 @@ void MyGLWidget::initializeGL ()
 void MyGLWidget::paintGL () 
 {
   // Esborrem el frame-buffer
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // Activem el VAO per a pintar la caseta 
-  glBindVertexArray (VAO_Casa);
-
-  // pintem
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 5);
+  glClear (GL_COLOR_BUFFER_BIT);
 
   // Activem el VAO per a pintar el terra 
   glBindVertexArray (VAO_Terra);
 
   // pintem
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  // Activem el VAO per a pintar la caseta 
+  glBindVertexArray (VAO_Casa);
+
+  // pintem
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 5);
 
   glBindVertexArray (0);
 }
@@ -50,14 +50,14 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-  transform = glm::rotate(transform, 0.58f, glm::vec3(1.,0.,0.));
+  transform = glm::rotate(transform, -0.58f, glm::vec3(1.,0.,0.));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
 void MyGLWidget::projectTransform()
 {
 	// Matriu de transformació de la projecció
-	glm::mat4 Proj = glm::perspective(M_PI/2.0, 1.0, 1.0, 3.0);
+	glm::mat4 Proj = glm::perspective(M_PI/2.0, 1.0, 1.0, 5.0);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
