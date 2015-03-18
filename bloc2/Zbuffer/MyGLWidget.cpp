@@ -20,7 +20,6 @@ void MyGLWidget::initializeGL ()
 
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
-  m.load("./models/HomerProves.obj");
   createBuffers();
   projectTransform();
 	viewTransform();
@@ -32,9 +31,11 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(VAO_model);
-  glDrawArrays(GL_TRIANGLES, 0, m.faces().size()*3);
-	glBindVertexArray(0);
+  // Activem el VAO per a pintar la caseta 
+  glBindVertexArray (VAO_Casa);
+
+  // pintem
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 5);
 
   // Activem el VAO per a pintar el terra 
   glBindVertexArray (VAO_Terra);
@@ -49,7 +50,7 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-  transform = glm::rotate(transform, 0.68f, glm::vec3(0.,1.,0.));
+  transform = glm::rotate(transform, 0.58f, glm::vec3(1.,0.,0.));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -94,6 +95,43 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
 
 void MyGLWidget::createBuffers () 
 {
+  // Dades de la caseta
+  // Dos VBOs, un amb posició i l'altre amb color
+  glm::vec3 posicio[5] = {
+	glm::vec3(-0.5, -1.0, 0.0),
+	glm::vec3( 0.5, -1.0, 0.0),
+	glm::vec3(-0.5,  0.0, 0.0),
+	glm::vec3( 0.5,  0.0, 0.0),
+	glm::vec3( 0.0,  0.6, 0.0)
+  }; 
+  glm::vec3 color[5] = {
+	glm::vec3(1,0,0),
+	glm::vec3(0,1,0),
+	glm::vec3(0,0,1),
+	glm::vec3(1,0,0),
+	glm::vec3(0,1,0)
+  };
+
+  // Creació del Vertex Array Object per pintar
+  glGenVertexArrays(1, &VAO_Casa);
+  glBindVertexArray(VAO_Casa);
+
+  glGenBuffers(1, &VBO_CasaPos);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CasaPos);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(posicio), posicio, GL_STATIC_DRAW);
+
+  // Activem l'atribut vertexLoc
+  glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(vertexLoc);
+
+  glGenBuffers(1, &VBO_CasaCol);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CasaCol);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+
+  // Activem l'atribut colorLoc
+  glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(colorLoc);
+
   // Dades del terra
   // Dos VBOs, un amb posició i l'altre amb color
   glm::vec3 posterra[4] = {
@@ -130,30 +168,6 @@ void MyGLWidget::createBuffers ()
   glEnableVertexAttribArray(colorLoc);
 
   glBindVertexArray (0);
-  
-	//
-	//MODEL
-	//
-	glGenVertexArrays(1, &VAO_model);
-	glBindVertexArray(VAO_model);
-  
-  glGenBuffers(1, &VBO_modelPos);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_modelPos);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*m.faces().size()*3*3, m.VBO_vertices(), GL_STATIC_DRAW);
-
-	// Activem l'atribut vertexLoc
-  glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(vertexLoc);
-
-	glGenBuffers(1, &VBO_modelCol);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_modelCol);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*m.faces().size()*3*3, m.VBO_matdiff(), GL_STATIC_DRAW);
-
-	// Activem l'atribut colorLoc
-  glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(colorLoc);
-
-	glBindVertexArray(0);
 }
 
 void MyGLWidget::carregaShaders() 

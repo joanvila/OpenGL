@@ -5,7 +5,6 @@
 #include <QKeyEvent>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Model/Model.h"
 
 class MyGLWidget : public QGLWidget {
   Q_OBJECT
@@ -38,13 +37,10 @@ class MyGLWidget : public QGLWidget {
     // VAO i VBO names
     GLuint VAO_Casa, VBO_CasaPos, VBO_CasaCol;
     GLuint VAO_Terra, VBO_TerraPos, VBO_TerraCol;
-		GLuint VAO_model, VBO_modelPos, VBO_modelCol;
     // Program
     QGLShaderProgram *program;
     // Internal vars
     float scale;
     glm::vec3 pos;
-
-		Model m;
 };
 
