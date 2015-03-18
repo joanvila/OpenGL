@@ -30,7 +30,6 @@ class MyGLWidget : public QGLWidget {
     void modelTransform ();
     void projectTransform ();
 		void viewTransform ();
-		void estatInicial ();
 
     // attribute locations
     GLuint vertexLoc, colorLoc, projLoc, viewLoc;
@@ -44,7 +43,6 @@ class MyGLWidget : public QGLWidget {
     QGLShaderProgram *program;
     // Internal vars
     float scale;
-		float rotateHomer;
     glm::vec3 pos;
 
 		Model m;

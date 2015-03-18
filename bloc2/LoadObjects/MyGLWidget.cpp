@@ -17,7 +17,7 @@ void MyGLWidget::initializeGL ()
   glGetError();  // Reinicia la variable d'error d'OpenGL
 
   glEnable(GL_DEPTH_TEST);
-	rotateHomer = 0.0f;
+
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
   m.load("./models/HomerProves.obj");
@@ -32,14 +32,11 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Pintem el model
 	glBindVertexArray(VAO_model);
   glDrawArrays(GL_TRIANGLES, 0, m.faces().size()*3);
 	glBindVertexArray(0);
 
-	estatInicial();  
-
-  // Activem el VAO per a pintar el terra
+  // Activem el VAO per a pintar el terra 
   glBindVertexArray (VAO_Terra);
 
   // pintem
@@ -52,14 +49,7 @@ void MyGLWidget::modelTransform ()
 {
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
-  transform = glm::rotate(transform, rotateHomer, glm::vec3(0.,1.,0.));
-  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
-}
-
-void MyGLWidget::estatInicial () 
-{
-  // Matriu de transformació de model
-  glm::mat4 transform = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.,1.,0.));
+  transform = glm::rotate(transform, 0.68f, glm::vec3(0.,1.,0.));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -94,12 +84,6 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
     }
     case Qt::Key_D: { // escalar a més petit
       scale -= 0.05;
-      modelTransform ();
-      updateGL();
-      break;
-		}
-		case Qt::Key_R: { // escalar a més petit
-      rotateHomer += M_PI/4.0;
       modelTransform ();
       updateGL();
       break;
