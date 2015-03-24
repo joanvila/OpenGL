@@ -36,21 +36,16 @@ class MyGLWidget : public QGLWidget {
     GLuint vertexLoc, colorLoc, projLoc, viewLoc;
     // uniform locations
     GLuint transLoc;
-
     // VAO i VBO names
     GLuint VAO_Casa, VBO_CasaPos, VBO_CasaCol;
     GLuint VAO_Terra, VBO_TerraPos, VBO_TerraCol;
 		GLuint VAO_model, VBO_modelPos, VBO_modelCol;
     // Program
     QGLShaderProgram *program;
-
     // Internal vars
     float scale;
 		float rotateHomer;
     glm::vec3 pos;
-		double raV;
-		double FOVini;
-		double FOV;
 
 		Model m;
 };

@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include "MyGLWidget.h"
+
 #include <iostream>
 
 MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
@@ -14,8 +15,7 @@ void MyGLWidget::initializeGL ()
   glewExperimental = GL_TRUE;
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
-	FOVini = 1.0;
-	FOV = 1.0;
+
   glEnable(GL_DEPTH_TEST);
 	rotateHomer = 0.0f;
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
@@ -67,16 +67,8 @@ void MyGLWidget::terraAlInici ()
 void MyGLWidget::projectTransform()
 {
 	// Matriu de transformació de la projecció
-	raV = double (width())/double (height());
-	if (raV > 1){
-		glm::mat4 Proj = glm::perspective(FOV, raV, 1.0, 3.0);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
-	}
-	else {
-		FOV = 2*atan(tan(FOVini)/raV);
-		glm::mat4 Proj = glm::perspective(FOV, raV, 1.0, 3.0);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
-	}
+	glm::mat4 Proj = glm::perspective(M_PI/2.0, 1.0, 1.0, 3.0);
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
 void MyGLWidget::viewTransform()
@@ -88,7 +80,6 @@ void MyGLWidget::viewTransform()
 void MyGLWidget::resizeGL (int w, int h) 
 {
   glViewport(0, 0, w, h);
-	projectTransform();
 }
 
 void MyGLWidget::keyPressEvent(QKeyEvent* event) 
