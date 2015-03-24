@@ -31,7 +31,6 @@ class MyGLWidget : public QGLWidget {
     void projectTransform ();
 		void viewTransform ();
 		void terraAlInici ();
-    void buscaExtremsICentreCaixa ();
 
     // attribute locations
     GLuint vertexLoc, colorLoc, projLoc, viewLoc;
@@ -52,11 +51,6 @@ class MyGLWidget : public QGLWidget {
 		double raV;
 		double FOVini;
 		double FOV;
-
-		//Caixa contenidora
-		glm::vec3 maxVert;
-		glm::vec3 minVert;
-		glm::vec3 centreCaixa;
 
 		Model m;
 };

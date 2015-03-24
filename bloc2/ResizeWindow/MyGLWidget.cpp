@@ -18,10 +18,9 @@ void MyGLWidget::initializeGL ()
 	FOV = 1.0;
   glEnable(GL_DEPTH_TEST);
 	rotateHomer = 0.0f;
-  glClearColor(0.7, 1.0, 0.7, 1.0); // defineix color de fons (d'esborrat)
+  glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
-  m.load("./models/Patricio.obj");
-	buscaExtremsICentreCaixa();
+  m.load("./models/HomerProves.obj");
   createBuffers();
   projectTransform();
 	viewTransform();
@@ -37,7 +36,7 @@ void MyGLWidget::paintGL ()
 	glBindVertexArray(VAO_model);
   glDrawArrays(GL_TRIANGLES, 0, m.faces().size()*3);
 	glBindVertexArray(0);
-/*
+
 	terraAlInici();  
 
   // Activem el VAO per a pintar el terra
@@ -47,35 +46,6 @@ void MyGLWidget::paintGL ()
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   glBindVertexArray (0);
-*/
-}
-
-void MyGLWidget::buscaExtremsICentreCaixa () 
-{
-  // Busquem els extrems de la caixa contenidora
-	maxVert.x = m.vertices()[0];
-	maxVert.y = m.vertices()[1];
-	maxVert.z = m.vertices()[2];
-
-  minVert.x = m.vertices()[0];
-	minVert.y = m.vertices()[1];
-	minVert.z = m.vertices()[2];
-
-	for (unsigned int i = 3; i < m.vertices().size(); i+= 3){
-		if (m.vertices()[i] > maxVert.x) maxVert.x = m.vertices()[i];
-		if (m.vertices()[i] < minVert.x) minVert.x = m.vertices()[i];
-
-		if (m.vertices()[i+1] > maxVert.y) maxVert.y = m.vertices()[i+1];
-		if (m.vertices()[i+1] < minVert.y) minVert.y = m.vertices()[i+1];
-
-		if (m.vertices()[i+2] > maxVert.z) maxVert.z = m.vertices()[i+2];
-		if (m.vertices()[i+2] < minVert.z) minVert.z = m.vertices()[i+2];
-	}
-
-	centreCaixa.x = (minVert.x + maxVert.x)/2;
-	centreCaixa.y = (minVert.y + maxVert.y)/2;
-	centreCaixa.z = (minVert.z + maxVert.z)/2;
-
 }
 
 void MyGLWidget::modelTransform () 
@@ -83,7 +53,6 @@ void MyGLWidget::modelTransform ()
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
   transform = glm::rotate(transform, rotateHomer, glm::vec3(0.,1.,0.));
-	transform = glm::translate(transform, -centreCaixa);
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -160,10 +129,10 @@ void MyGLWidget::createBuffers ()
 	glm::vec3(1.0, -1.0, 1.0)
   }; 
   glm::vec3 colterra[4] = {
-	glm::vec3(0.2,0.4,0.6),
-	glm::vec3(0.2,0.4,0.6),
-	glm::vec3(0.2,0.4,0.6),
-	glm::vec3(0.2,0.4,0.6)
+	glm::vec3(1,0,1),
+	glm::vec3(1,0,1),
+	glm::vec3(1,0,1),
+	glm::vec3(1,0,1)
   };
 
   // Creació del Vertex Array Object per pintar
