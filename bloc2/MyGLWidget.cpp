@@ -37,7 +37,7 @@ void MyGLWidget::paintGL ()
   glDrawArrays(GL_TRIANGLES, 0, m.faces().size()*3);
 	glBindVertexArray(0);
 
-	estatInicial();  
+	terraAlInici();  
 
   // Activem el VAO per a pintar el terra
   glBindVertexArray (VAO_Terra);
@@ -56,10 +56,11 @@ void MyGLWidget::modelTransform ()
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
-void MyGLWidget::estatInicial () 
+void MyGLWidget::terraAlInici () 
 {
   // Matriu de transformació de model
-  glm::mat4 transform = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.,1.,0.));
+  glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+  transform = glm::rotate(transform, 0.0f, glm::vec3(0.,1.,0.));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 

@@ -30,7 +30,7 @@ class MyGLWidget : public QGLWidget {
     void modelTransform ();
     void projectTransform ();
 		void viewTransform ();
-		void estatInicial ();
+		void terraAlInici ();
 
     // attribute locations
     GLuint vertexLoc, colorLoc, projLoc, viewLoc;
