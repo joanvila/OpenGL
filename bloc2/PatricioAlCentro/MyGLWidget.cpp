@@ -2,8 +2,6 @@
 #include "MyGLWidget.h"
 #include <iostream>
 
-using namespace std;
-
 MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
 {
   setFocusPolicy(Qt::ClickFocus); // per rebre events de teclat
@@ -16,21 +14,18 @@ void MyGLWidget::initializeGL ()
   glewExperimental = GL_TRUE;
   glewInit(); 
   glGetError();  // Reinicia la variable d'error d'OpenGL
-	
+	FOVini = 1.0;
+	FOV = 1.0;
   glEnable(GL_DEPTH_TEST);
-
 	rotateHomer = 0.0f;
   glClearColor(0.7, 1.0, 0.7, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
-
   m.load("./models/Patricio.obj");
 	buscaExtremsICentreCaixa();
-
   createBuffers();
-	modelTransform ();
-	recalcularParamsVisio();
   projectTransform();
 	viewTransform();
+  modelTransform ();
 }
 
 void MyGLWidget::paintGL () 
@@ -77,26 +72,10 @@ void MyGLWidget::buscaExtremsICentreCaixa ()
 		if (m.vertices()[i+2] < minVert.z) minVert.z = m.vertices()[i+2];
 	}
 
-	centreCaixaInicial.x = (minVert.x + maxVert.x)/2;
-	centreCaixaInicial.y = (minVert.y + maxVert.y)/2;
-	centreCaixaInicial.z = (minVert.z + maxVert.z)/2;
+	centreCaixa.x = (minVert.x + maxVert.x)/2;
+	centreCaixa.y = (minVert.y + maxVert.y)/2;
+	centreCaixa.z = (minVert.z + maxVert.z)/2;
 
-	double x = maxVert.x - centreCaixaInicial.x;
-	double y = maxVert.y - centreCaixaInicial.y;
-	double z = maxVert.z - centreCaixaInicial.x;
-
-	radiEsfera = sqrt(pow(x, 2.0)+pow(y, 2.0)+pow(z, 2.0));
-
-}
-
-void MyGLWidget::recalcularParamsVisio()
-{
-	d = radiEsfera*2;
-	OBS = glm::vec3(0.0,0.0,d);
-	FOVini = 2*asin(radiEsfera/d);
-	FOV = 2*asin(radiEsfera/d);
-	zNear = d - radiEsfera;
-	zFar = d + radiEsfera;
 }
 
 void MyGLWidget::modelTransform () 
@@ -104,8 +83,7 @@ void MyGLWidget::modelTransform ()
   // Matriu de transformació de model
   glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
   transform = glm::rotate(transform, rotateHomer, glm::vec3(0.,1.,0.));
-	transform = glm::translate(transform, -centreCaixaInicial);
-	centreCaixa = centreCaixaInicial - centreCaixaInicial;
+	transform = glm::translate(transform, -centreCaixa);
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -122,19 +100,19 @@ void MyGLWidget::projectTransform()
 	// Matriu de transformació de la projecció
 	raV = double (width())/double (height());
 	if (raV > 1){
-		glm::mat4 Proj = glm::perspective(FOV, raV, zNear, zFar);
+		glm::mat4 Proj = glm::perspective(FOV, raV, 1.0, 3.0);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
 	}
 	else {
 		FOV = 2*atan(tan(FOVini)/raV);
-		glm::mat4 Proj = glm::perspective(FOV, raV, zNear, zFar);
+		glm::mat4 Proj = glm::perspective(FOV, raV, 1.0, 3.0);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, &Proj[0][0]);
 	}
 }
 
 void MyGLWidget::viewTransform()
 {
-	glm::mat4 View = glm::lookAt(OBS, glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glm::mat4 View = glm::lookAt(glm::vec3(0,0,2), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
@@ -142,13 +120,6 @@ void MyGLWidget::resizeGL (int w, int h)
 {
   glViewport(0, 0, w, h);
 	projectTransform();
-}
-
-void MyGLWidget::imprimirInfo () 
-{
-
-
-
 }
 
 void MyGLWidget::keyPressEvent(QKeyEvent* event) 

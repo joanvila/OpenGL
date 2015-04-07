@@ -32,8 +32,6 @@ class MyGLWidget : public QGLWidget {
 		void viewTransform ();
 		void terraAlInici ();
     void buscaExtremsICentreCaixa ();
-		void recalcularParamsVisio ();
-		void imprimirInfo ();
 
     // attribute locations
     GLuint vertexLoc, colorLoc, projLoc, viewLoc;
@@ -47,8 +45,6 @@ class MyGLWidget : public QGLWidget {
     // Program
     QGLShaderProgram *program;
 
-		glm::vec3 OBS;
-
     // Internal vars
     float scale;
 		float rotateHomer;
@@ -60,13 +56,7 @@ class MyGLWidget : public QGLWidget {
 		//Caixa contenidora
 		glm::vec3 maxVert;
 		glm::vec3 minVert;
-		glm::vec3 centreCaixaInicial;
 		glm::vec3 centreCaixa;
-		double radiEsfera;
-		double d;
-		double zNear;
-		double zFar;
-		
 
 		Model m;
 };
