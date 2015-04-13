@@ -60,7 +60,7 @@ void Model::load(std::string filename) {
     _normals.erase(_normals.begin(), _normals.end());
     _faces.erase(_faces.begin(), _faces.end());
   }
-  unsigned int fiPath = filename.rfind("/");
+  size_t fiPath = filename.rfind("/");
   if (fiPath == string::npos) modelPath = "";
   else modelPath = filename.substr(0, fiPath+1);
 
@@ -84,7 +84,7 @@ void Model::load(std::string filename) {
     double coord;
     Face auxFace;
     stringstream auxss;
-    unsigned int first, second;
+    size_t first, second;
     switch(c){
       //-------------
     case '#':    // comment line
