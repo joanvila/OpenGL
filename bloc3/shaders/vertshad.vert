@@ -16,7 +16,6 @@ uniform vec3 posFocus;
 // Valors per als components que necessitem dels focus de llum
 vec3 colFocus = vec3(0.8, 0.8, 0.8);
 vec3 llumAmbient = vec3(0.2, 0.2, 0.2);
-//vec3 posFocus = vec3(0, 1, -1);  // en SCA
 
 out vec3 fcolor;
 
@@ -62,7 +61,7 @@ void main()
 		NormSCO = normalize(NormalMatrix*normal);
 
 		vec4 vertSCO = view * TG * vec4 (vertex, 1.0);
-		vec4 posFocusSCO = view * vec4 (posFocus, 1.0);
+		vec4 posFocusSCO = vec4 (posFocus, 1.0); //Si no ens passen el punt en SCO := view * vec4 (posFocus, 1.0);
 
 		vec3 L = normalize(posFocusSCO.xyz - vertSCO.xyz);
 

@@ -10,7 +10,7 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
-	posFocus = glm::vec3(0.0, 1.0, -1.0);
+	posFocus = glm::vec3(0.0, 0.0, 0.0);
 }
 
 void MyGLWidget::initializeGL ()
@@ -340,12 +340,15 @@ void MyGLWidget::keyPressEvent (QKeyEvent *e)
         break;
     case Qt::Key_K:
         posFocus.x += 1.0;
-        paintGL ();
+				focusTransform ();
         break;
     case Qt::Key_L:
         posFocus.x -= 1.0;
-        paintGL ();
+				focusTransform ();
         break;
+		case Qt::Key_R:
+				angleY += 0.5;
+				viewTransform ();
     default: e->ignore(); break;
   }
   updateGL();
