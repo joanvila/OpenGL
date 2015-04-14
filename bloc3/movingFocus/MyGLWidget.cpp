@@ -10,6 +10,7 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
+	posFocus = glm::vec3(0.0, 1.0, -1.0);
 }
 
 void MyGLWidget::initializeGL ()
@@ -31,6 +32,9 @@ void MyGLWidget::paintGL ()
 {
   // Esborrem el frame-buffer i el depth-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Posem el focus de llum a lloc
+  focusTransform ();
 
   // Activem el VAO per a pintar el terra 
   glBindVertexArray (VAO_Terra);
@@ -146,10 +150,10 @@ void MyGLWidget::createBuffers ()
   };
 
   // Definim el material del terra
-  glm::vec3 amb(0.2,0,0.2);
-  glm::vec3 diff(0.8,0,0.8);
-  glm::vec3 spec(0,0,0);
-  float shin = 100;
+  glm::vec3 amb(0,0,1);
+  glm::vec3 diff(0,0,1);
+  glm::vec3 spec(1,1,1);
+  float shin = 5;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
   glm::vec3 matambterra[12] = {
@@ -259,6 +263,7 @@ void MyGLWidget::carregaShaders ()
   transLoc = glGetUniformLocation (program->programId(), "TG");
   projLoc = glGetUniformLocation (program->programId(), "proj");
   viewLoc = glGetUniformLocation (program->programId(), "view");
+	focusLoc = glGetUniformLocation (program->programId(), "posFocus");
 }
 
 void MyGLWidget::modelTransformPatricio ()
@@ -275,6 +280,11 @@ void MyGLWidget::modelTransformTerra ()
   glm::mat4 TG;  // Matriu de transformació
   TG = glm::mat4(1.f);
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+}
+
+void MyGLWidget::focusTransform ()
+{
+  glUniform3f (focusLoc, posFocus.x, posFocus.y, posFocus.z);
 }
 
 void MyGLWidget::projectTransform ()
@@ -327,7 +337,15 @@ void MyGLWidget::keyPressEvent (QKeyEvent *e)
   {
     case Qt::Key_Escape:
         exit(0);
-
+        break;
+    case Qt::Key_K:
+        posFocus.x += 1.0;
+        paintGL ();
+        break;
+    case Qt::Key_L:
+        posFocus.x -= 1.0;
+        paintGL ();
+        break;
     default: e->ignore(); break;
   }
   updateGL();
