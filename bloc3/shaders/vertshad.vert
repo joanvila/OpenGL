@@ -13,9 +13,7 @@ uniform mat4 view;
 uniform mat4 TG;
 uniform vec3 posFocus;
 uniform vec3 colFocus;
-
-// Valors per als components que necessitem dels focus de llum
-vec3 llumAmbient = vec3(0.2, 0.2, 0.2);
+uniform vec3 llumAmbient;
 
 out vec3 fcolor;
 
