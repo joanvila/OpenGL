@@ -1,8 +1,16 @@
 *~
 .DS_Store
 *.o
-!model.o
 *.pro
 Makefile
 *Exemple
+Bloc1_Exemple
+Bloc2-Exemple
+Bloc3-Exemple
 .qmake.stash
+
+*.app/
+*.app/*
+*.app/*/*
+*.app/*/*/*
+*.app/*/*/*/*
