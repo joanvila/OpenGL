@@ -11,7 +11,6 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
 	posFocus = glm::vec3(0.0, 0.0, 0.0);
-	colFocus = glm::vec3(0.8, 0.8, 0.8);
 }
 
 void MyGLWidget::initializeGL ()
@@ -265,7 +264,6 @@ void MyGLWidget::carregaShaders ()
   projLoc = glGetUniformLocation (program->programId(), "proj");
   viewLoc = glGetUniformLocation (program->programId(), "view");
 	focusLoc = glGetUniformLocation (program->programId(), "posFocus");
-	colFocusLoc = glGetUniformLocation (program->programId(), "colFocus");
 }
 
 void MyGLWidget::modelTransformPatricio ()
@@ -287,7 +285,6 @@ void MyGLWidget::modelTransformTerra ()
 void MyGLWidget::focusTransform ()
 {
   glUniform3f (focusLoc, posFocus.x, posFocus.y, posFocus.z);
-	glUniform3f (colFocusLoc, colFocus.x, colFocus.y, colFocus.z);
 }
 
 void MyGLWidget::projectTransform ()

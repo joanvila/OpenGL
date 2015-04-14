@@ -49,7 +49,7 @@ class MyGLWidget : public QGLWidget
     GLuint VAO_Terra, VBO_TerraPos, VBO_TerraNorm, VBO_TerraMatamb, VBO_TerraMatdiff, VBO_TerraMatspec, VBO_TerraMatshin;
     QGLShaderProgram *program;
 
-    GLuint transLoc, projLoc, viewLoc, focusLoc, colFocusLoc;
+    GLuint transLoc, projLoc, viewLoc, focusLoc;
     GLuint vertexLoc, normalLoc, matambLoc, matdiffLoc, matspecLoc, matshinLoc;
     Model patr;
     // paràmetres calculats a partir de la capsa contenidora del model
@@ -64,5 +64,4 @@ class MyGLWidget : public QGLWidget
 
 		//Nous parametres
     glm::vec3 posFocus;
-		glm::vec3 colFocus;
 };
