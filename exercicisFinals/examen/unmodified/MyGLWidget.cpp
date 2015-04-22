@@ -47,14 +47,6 @@ void MyGLWidget::paintGL ()
 
   // Pintem l'escena
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
-
-	// Activem el VAO per a pintar el Patricio
-  glBindVertexArray (VAO_Patr);
-
-  modelTransformPatricio2 ();
-
-  // Pintem l'escena
-  glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
   
   glBindVertexArray(0);
 }
@@ -278,17 +270,6 @@ void MyGLWidget::modelTransformPatricio ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::modelTransformPatricio2 ()
-{
-  glm::mat4 TG;  // Matriu de transformació
-	TG = glm::translate(TG, glm::vec3(0.0,alsada*escala,0.0));
-  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
-	TG = glm::rotate(TG, (float)M_PI, glm::vec3(0.0,0.0,1.0));
-  TG = glm::translate(TG, -centrePatr);
-  
-  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
-}
-
 void MyGLWidget::modelTransformTerra ()
 {
   glm::mat4 TG;  // Matriu de transformació
@@ -337,7 +318,6 @@ void MyGLWidget::calculaCapsaModel ()
       maxz = patr.vertices()[i+2];
   }
   escala = 2.0/(maxy-miny);
-	alsada = maxy-miny;
   centrePatr[0] = (minx+maxx)/2.0; centrePatr[1] = (miny+maxy)/2.0; centrePatr[2] = (minz+maxz)/2.0;
 }
 

@@ -41,7 +41,6 @@ class MyGLWidget : public QGLWidget
     void viewTransform ();
     void modelTransformTerra ();
     void modelTransformPatricio ();
-		void modelTransformPatricio2 ();
     void calculaCapsaModel ();
 
     // VAO i VBO names
@@ -55,7 +54,6 @@ class MyGLWidget : public QGLWidget
     // paràmetres calculats a partir de la capsa contenidora del model
     glm::vec3 centrePatr;
     float escala;
-		float alsada;
     double radiEsc;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;
