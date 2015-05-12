@@ -10,9 +10,6 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
-  posFocus = glm::vec3(0.0,0.0,0.0);
-	colFocus = glm::vec3(0.8, 0.8, 0.0);
-	llumAmbient = glm::vec3(0.2, 0.2, 0.0);
 }
 
 void MyGLWidget::initializeGL ()
@@ -35,9 +32,6 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer i el depth-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Posem el focus de llum a lloc
-  focusTransform ();
-
   // Activem el VAO per a pintar el terra
   glBindVertexArray (VAO_Terra);
 
@@ -54,6 +48,14 @@ void MyGLWidget::paintGL ()
   // Pintem l'escena
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
 
+  // Activem el VAO per a pintar el Patricio
+  glBindVertexArray (VAO_Patr);
+
+  modelTransformPatricio2 ();
+
+  // Pintem l'escena
+  glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
+
   glBindVertexArray(0);
 }
 
@@ -66,7 +68,7 @@ void MyGLWidget::createBuffers ()
 {
   // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
   //patr.load("/assig/idi/models/Patricio.obj");
-  patr.load("../models/Patricio.obj");
+  patr.load("./models/Patricio.obj");
 
   // Calculem la capsa contenidora del model
   calculaCapsaModel ();
@@ -152,10 +154,10 @@ void MyGLWidget::createBuffers ()
   };
 
   // Definim el material del terra
-  glm::vec3 amb(0,0,1);
-  glm::vec3 diff(0,0,1);
-  glm::vec3 spec(1,1,1);
-  float shin = 5;
+  glm::vec3 amb(0.2,0,0.2);
+  glm::vec3 diff(0.8,0,0.8);
+  glm::vec3 spec(0,0,0);
+  float shin = 100;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
   glm::vec3 matambterra[12] = {
@@ -265,15 +267,23 @@ void MyGLWidget::carregaShaders ()
   transLoc = glGetUniformLocation (program->programId(), "TG");
   projLoc = glGetUniformLocation (program->programId(), "proj");
   viewLoc = glGetUniformLocation (program->programId(), "view");
-	focusLoc = glGetUniformLocation (program->programId(), "posFocus");
-	colFocusLoc = glGetUniformLocation (program->programId(), "colFocus");
-	llumAmbientLoc = glGetUniformLocation (program->programId(), "llumAmbient");
 }
 
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG;  // Matriu de transformació
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
+  TG = glm::translate(TG, -centrePatr);
+
+  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+}
+
+void MyGLWidget::modelTransformPatricio2 ()
+{
+  glm::mat4 TG;  // Matriu de transformació
+	TG = glm::translate(TG, glm::vec3(0.0,alsada*escala,0.0));
+  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
+	TG = glm::rotate(TG, (float)M_PI, glm::vec3(0.0,0.0,1.0));
   TG = glm::translate(TG, -centrePatr);
 
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
@@ -286,18 +296,12 @@ void MyGLWidget::modelTransformTerra ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::focusTransform ()
-{
-  glUniform3f (focusLoc, posFocus.x, posFocus.y, posFocus.z);
-	glUniform3f (colFocusLoc, colFocus.x, colFocus.y, colFocus.z);
-	glUniform3f (llumAmbientLoc, llumAmbient.x, llumAmbient.y, llumAmbient.z);
-}
-
 void MyGLWidget::projectTransform ()
 {
   //sempre mantenim la aspect ratio de la pantalla per evitar deformacions
   glm::mat4 Proj;  // Matriu de projecció
-  Proj = glm::perspective(M_PI/3.0, 1.0, radiEsc, 3.*radiEsc);
+  double FOV = 2*asin((radiEsc*2.0)/(radiEsc*4.0));
+  Proj = glm::perspective(FOV, 1.0, radiEsc*2.0, 3.*radiEsc*2.0);
 
   glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
@@ -305,8 +309,9 @@ void MyGLWidget::projectTransform ()
 void MyGLWidget::viewTransform ()
 {
   glm::mat4 View;  // Matriu de posició i orientació
-  View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
+  View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc*2.0));
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
+  View = glm::translate(View, glm::vec3(0.0,-(alsada*escala/2.0),0.0));
 
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
@@ -334,6 +339,7 @@ void MyGLWidget::calculaCapsaModel ()
       maxz = patr.vertices()[i+2];
   }
   escala = 2.0/(maxy-miny);
+  alsada = maxy-miny;
   centrePatr[0] = (minx+maxx)/2.0; centrePatr[1] = (miny+maxy)/2.0; centrePatr[2] = (minz+maxz)/2.0;
 }
 
@@ -343,18 +349,7 @@ void MyGLWidget::keyPressEvent (QKeyEvent *e)
   {
     case Qt::Key_Escape:
         exit(0);
-        break;
-    case Qt::Key_K:
-        posFocus.x += 1.0;
-				focusTransform ();
-        break;
-    case Qt::Key_L:
-        posFocus.x -= 1.0;
-				focusTransform ();
-        break;
-		case Qt::Key_R:
-				angleY += 0.5;
-				viewTransform ();
+
     default: e->ignore(); break;
   }
   updateGL();

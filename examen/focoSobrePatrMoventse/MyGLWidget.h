@@ -42,14 +42,14 @@ class MyGLWidget : public QGLWidget
     void modelTransformTerra ();
     void modelTransformPatricio ();
     void calculaCapsaModel ();
-		void focusTransform ();
+    void focusTransform ();
 
     // VAO i VBO names
     GLuint VAO_Patr, VBO_PatrPos, VBO_PatrNorm, VBO_PatrMatamb, VBO_PatrMatdiff, VBO_PatrMatspec, VBO_PatrMatshin;
     GLuint VAO_Terra, VBO_TerraPos, VBO_TerraNorm, VBO_TerraMatamb, VBO_TerraMatdiff, VBO_TerraMatspec, VBO_TerraMatshin;
     QGLShaderProgram *program;
 
-    GLuint transLoc, projLoc, viewLoc, focusLoc, colFocusLoc, llumAmbientLoc;
+    GLuint transLoc, projLoc, viewLoc, focusLoc;
     GLuint vertexLoc, normalLoc, matambLoc, matdiffLoc, matspecLoc, matshinLoc;
     Model patr;
     // paràmetres calculats a partir de la capsa contenidora del model
@@ -62,8 +62,7 @@ class MyGLWidget : public QGLWidget
     int xClick, yClick;
     float angleY;
 
-		//Nous parametres
     glm::vec3 posFocus;
-		glm::vec3 colFocus;
-		glm::vec3 llumAmbient;
+    float movX;
+    float movZ;
 };

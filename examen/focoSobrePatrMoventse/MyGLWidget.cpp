@@ -10,9 +10,9 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
-  posFocus = glm::vec3(0.0,0.0,0.0);
-	colFocus = glm::vec3(0.8, 0.8, 0.0);
-	llumAmbient = glm::vec3(0.2, 0.2, 0.0);
+  posFocus = glm::vec3(0.0,3.0,0.0);
+  movX = 0.0;
+  movZ = 0.0;
 }
 
 void MyGLWidget::initializeGL ()
@@ -35,7 +35,7 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer i el depth-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Posem el focus de llum a lloc
+  //Posem el focus de llum a lloc
   focusTransform ();
 
   // Activem el VAO per a pintar el terra
@@ -66,7 +66,7 @@ void MyGLWidget::createBuffers ()
 {
   // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
   //patr.load("/assig/idi/models/Patricio.obj");
-  patr.load("../models/Patricio.obj");
+  patr.load("./models/Patricio.obj");
 
   // Calculem la capsa contenidora del model
   calculaCapsaModel ();
@@ -152,10 +152,10 @@ void MyGLWidget::createBuffers ()
   };
 
   // Definim el material del terra
-  glm::vec3 amb(0,0,1);
-  glm::vec3 diff(0,0,1);
-  glm::vec3 spec(1,1,1);
-  float shin = 5;
+  glm::vec3 amb(0.2,0,0.2);
+  glm::vec3 diff(0.8,0,0.8);
+  glm::vec3 spec(0,0,0);
+  float shin = 100;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
   glm::vec3 matambterra[12] = {
@@ -265,14 +265,13 @@ void MyGLWidget::carregaShaders ()
   transLoc = glGetUniformLocation (program->programId(), "TG");
   projLoc = glGetUniformLocation (program->programId(), "proj");
   viewLoc = glGetUniformLocation (program->programId(), "view");
-	focusLoc = glGetUniformLocation (program->programId(), "posFocus");
-	colFocusLoc = glGetUniformLocation (program->programId(), "colFocus");
-	llumAmbientLoc = glGetUniformLocation (program->programId(), "llumAmbient");
+  focusLoc = glGetUniformLocation (program->programId(), "posFocus");
 }
 
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG;  // Matriu de transformació
+  TG = glm::translate(TG, glm::vec3(movX,0.0,movZ));
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centrePatr);
 
@@ -289,8 +288,6 @@ void MyGLWidget::modelTransformTerra ()
 void MyGLWidget::focusTransform ()
 {
   glUniform3f (focusLoc, posFocus.x, posFocus.y, posFocus.z);
-	glUniform3f (colFocusLoc, colFocus.x, colFocus.y, colFocus.z);
-	glUniform3f (llumAmbientLoc, llumAmbient.x, llumAmbient.y, llumAmbient.z);
 }
 
 void MyGLWidget::projectTransform ()
@@ -341,22 +338,28 @@ void MyGLWidget::keyPressEvent (QKeyEvent *e)
 {
   switch (e->key())
   {
+    case Qt::Key_Up:
+        posFocus.z -= 0.2;
+        movZ -= 0.2;
+        break;
+    case Qt::Key_Down:
+        posFocus.z += 0.2;
+        movZ += 0.2;
+        break;
+    case Qt::Key_Left:
+        posFocus.x -= 0.2;
+        movX -= 0.2;
+        break;
+    case Qt::Key_Right:
+        posFocus.x += 0.2;
+        movX += 0.2;
+        break;
     case Qt::Key_Escape:
         exit(0);
-        break;
-    case Qt::Key_K:
-        posFocus.x += 1.0;
-				focusTransform ();
-        break;
-    case Qt::Key_L:
-        posFocus.x -= 1.0;
-				focusTransform ();
-        break;
-		case Qt::Key_R:
-				angleY += 0.5;
-				viewTransform ();
+
     default: e->ignore(); break;
   }
+  focusTransform();
   updateGL();
 }
 

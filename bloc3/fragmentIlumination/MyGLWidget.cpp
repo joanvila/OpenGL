@@ -10,9 +10,9 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
-  posFocus = glm::vec3(0.0,0.0,0.0);
-	colFocus = glm::vec3(0.8, 0.8, 0.0);
-	llumAmbient = glm::vec3(0.2, 0.2, 0.0);
+	posFocus = glm::vec3(0.0, 0.0, 0.0);
+	colFocus = glm::vec3(0.8, 0.8, 0.8);
+	llumAmbient = glm::vec3(0.2, 0.2, 0.2);
 }
 
 void MyGLWidget::initializeGL ()

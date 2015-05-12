@@ -10,9 +10,9 @@ MyGLWidget::MyGLWidget (QGLFormat &f, QWidget* parent) : QGLWidget(f, parent)
   angleY = 0.0;
   DoingInteractive = NONE;
   radiEsc = sqrt(3);
-  posFocus = glm::vec3(0.0,0.0,0.0);
-	colFocus = glm::vec3(0.8, 0.8, 0.0);
-	llumAmbient = glm::vec3(0.2, 0.2, 0.0);
+  posZ = -0.5;
+  rotacio = 0.0;
+  dins = 1;
 }
 
 void MyGLWidget::initializeGL ()
@@ -35,24 +35,31 @@ void MyGLWidget::paintGL ()
   // Esborrem el frame-buffer i el depth-buffer
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Posem el focus de llum a lloc
-  focusTransform ();
-
   // Activem el VAO per a pintar el terra
   glBindVertexArray (VAO_Terra);
+	glUniform1i (pintarCow, 0);
 
   modelTransformTerra ();
 
   // pintem
   glDrawArrays(GL_TRIANGLES, 0, 12);
 
-  // Activem el VAO per a pintar el Patricio
+  //Activem el VAO per a pintar el Patricio
   glBindVertexArray (VAO_Patr);
 
   modelTransformPatricio ();
 
   // Pintem l'escena
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
+
+  // Activem el VAO per a pintar el Patricio
+  glBindVertexArray (VAO_Cow);
+	glUniform1i (pintarCow, 1);
+
+  modelTransformCow ();
+
+  // Pintem l'escena
+  glDrawArrays(GL_TRIANGLES, 0, cow.faces().size()*3);
 
   glBindVertexArray(0);
 }
@@ -66,7 +73,7 @@ void MyGLWidget::createBuffers ()
 {
   // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
   //patr.load("/assig/idi/models/Patricio.obj");
-  patr.load("../models/Patricio.obj");
+  patr.load("./models/Patricio.obj");
 
   // Calculem la capsa contenidora del model
   calculaCapsaModel ();
@@ -126,6 +133,68 @@ void MyGLWidget::createBuffers ()
   glVertexAttribPointer(matshinLoc, 1, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(matshinLoc);
 
+  // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
+  cow.load("./models/cow.obj");
+
+  // Calculem la capsa contenidora del model
+  calculaCapsaModelCow ();
+
+  // Creació del Vertex Array Object del Patricio
+  glGenVertexArrays(1, &VAO_Cow);
+  glBindVertexArray(VAO_Cow);
+
+  // Creació dels buffers del model patr
+  // Buffer de posicions
+  glGenBuffers(1, &VBO_CowPos);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowPos);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3*3, cow.VBO_vertices(), GL_STATIC_DRAW);
+
+  // Activem l'atribut vertexLoc
+  glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(vertexLoc);
+
+  // Buffer de normals
+  glGenBuffers(1, &VBO_CowNorm);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowNorm);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3*3, cow.VBO_normals(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(normalLoc);
+
+  // En lloc del color, ara passem tots els paràmetres dels materials
+  // Buffer de component ambient
+  glGenBuffers(1, &VBO_CowMatamb);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowMatamb);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3*3, cow.VBO_matamb(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matambLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matambLoc);
+
+  // Buffer de component difusa
+  glGenBuffers(1, &VBO_CowMatdiff);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowMatdiff);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3*3, cow.VBO_matdiff(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matdiffLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matdiffLoc);
+
+  // Buffer de component especular
+  glGenBuffers(1, &VBO_CowMatspec);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowMatspec);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3*3, cow.VBO_matspec(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matspecLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matspecLoc);
+
+  // Buffer de component shininness
+  glGenBuffers(1, &VBO_CowMatshin);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_CowMatshin);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*cow.faces().size()*3, cow.VBO_matshin(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matshinLoc, 1, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matshinLoc);
+
+
   // Dades del terra
   // VBO amb la posició dels vèrtexs
   glm::vec3 posterra[12] = {
@@ -152,10 +221,10 @@ void MyGLWidget::createBuffers ()
   };
 
   // Definim el material del terra
-  glm::vec3 amb(0,0,1);
-  glm::vec3 diff(0,0,1);
-  glm::vec3 spec(1,1,1);
-  float shin = 5;
+  glm::vec3 amb(0.2,0,0.2);
+  glm::vec3 diff(0.8,0,0.8);
+  glm::vec3 spec(0,0,0);
+  float shin = 100;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
   glm::vec3 matambterra[12] = {
@@ -265,14 +334,14 @@ void MyGLWidget::carregaShaders ()
   transLoc = glGetUniformLocation (program->programId(), "TG");
   projLoc = glGetUniformLocation (program->programId(), "proj");
   viewLoc = glGetUniformLocation (program->programId(), "view");
-	focusLoc = glGetUniformLocation (program->programId(), "posFocus");
-	colFocusLoc = glGetUniformLocation (program->programId(), "colFocus");
-	llumAmbientLoc = glGetUniformLocation (program->programId(), "llumAmbient");
+	pintarCow = glGetUniformLocation (program->programId(), "pintarCow");
 }
 
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG;  // Matriu de transformació
+  TG = glm::rotate(TG, rotacio, glm::vec3(1.0,0.0,0.0));
+  TG = glm::translate(TG, glm::vec3(0.0,0.0,posZ));
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centrePatr);
 
@@ -286,11 +355,18 @@ void MyGLWidget::modelTransformTerra ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::focusTransform ()
+void MyGLWidget::modelTransformCow ()
 {
-  glUniform3f (focusLoc, posFocus.x, posFocus.y, posFocus.z);
-	glUniform3f (colFocusLoc, colFocus.x, colFocus.y, colFocus.z);
-	glUniform3f (llumAmbientLoc, llumAmbient.x, llumAmbient.y, llumAmbient.z);
+  glm::mat4 TG;  // Matriu de transformació
+  TG = glm::mat4(1.f);
+  TG = glm::rotate(TG, rotacio, glm::vec3(1.0,0.0,0.0));
+  TG = glm::translate(TG, glm::vec3(0.0,-0.5,0.4));
+  TG = glm::scale(TG, glm::vec3(escalaCow, escalaCow, escalaCow));
+  TG = glm::rotate(TG, (float) -(M_PI/2), glm::vec3(0.0,1.0,0.0));
+  TG = glm::rotate(TG, (float) -(M_PI/2), glm::vec3(1.0,0.0,0.0));
+  TG = glm::translate(TG, -centreCow);
+
+  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
 void MyGLWidget::projectTransform ()
@@ -333,30 +409,61 @@ void MyGLWidget::calculaCapsaModel ()
     if (patr.vertices()[i+2] > maxz)
       maxz = patr.vertices()[i+2];
   }
-  escala = 2.0/(maxy-miny);
+  escala = 1.5/(maxy-miny);
   centrePatr[0] = (minx+maxx)/2.0; centrePatr[1] = (miny+maxy)/2.0; centrePatr[2] = (minz+maxz)/2.0;
 }
+
+void MyGLWidget::calculaCapsaModelCow ()
+{
+
+  // Càlcul capsa contenidora i valors transformacions inicials
+  float minx, miny, minz, maxx, maxy, maxz;
+  minx = maxx = cow.vertices()[0];
+  miny = maxy = cow.vertices()[1];
+  minz = maxz = cow.vertices()[2];
+  for (unsigned int i = 3; i < cow.vertices().size(); i+=3)
+  {
+    if (cow.vertices()[i+0] < minx)
+      minx = cow.vertices()[i+0];
+    if (cow.vertices()[i+0] > maxx)
+      maxx = cow.vertices()[i+0];
+    if (cow.vertices()[i+1] < miny)
+      miny = cow.vertices()[i+1];
+    if (cow.vertices()[i+1] > maxy)
+      maxy = cow.vertices()[i+1];
+    if (cow.vertices()[i+2] < minz)
+      minz = cow.vertices()[i+2];
+    if (cow.vertices()[i+2] > maxz)
+      maxz = cow.vertices()[i+2];
+  }
+  escalaCow = 1.0/(maxz-minz);
+  centreCow[0] = (minx+maxx)/2.0; centreCow[1] = (miny+maxy)/2.0; centreCow[2] = (minz+maxz)/2.0;
+}
+
 
 void MyGLWidget::keyPressEvent (QKeyEvent *e)
 {
   switch (e->key())
   {
+    case Qt::Key_F:
+        if (dins == 1){
+          posZ -= 0.2;
+          dins = 0;
+        } else {
+          posZ += 0.2;
+          dins = 1;
+        }
+        break;
+    case Qt::Key_R:
+        rotacio += M_PI/3.0;
+        break;
     case Qt::Key_Escape:
         exit(0);
-        break;
-    case Qt::Key_K:
-        posFocus.x += 1.0;
-				focusTransform ();
-        break;
-    case Qt::Key_L:
-        posFocus.x -= 1.0;
-				focusTransform ();
-        break;
-		case Qt::Key_R:
-				angleY += 0.5;
-				viewTransform ();
+
     default: e->ignore(); break;
   }
+  modelTransformPatricio();
+  modelTransformCow();
   updateGL();
 }
 
